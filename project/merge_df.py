@@ -4,6 +4,11 @@ import glob
 import os
 import sys
 
+#####################################################################################################
+# call_dataframes call the average table and the mun_data file, then a dataframe of each is created #
+# and passed as variables to the next function                                                      #
+#####################################################################################################
+
 def call_dataframes(path):
     file_name = sorted(glob.iglob('{}avg_data/*.csv'.format(path)),\
         key=os.path.getctime)[-1]
@@ -14,6 +19,11 @@ def call_dataframes(path):
 
     return two_hour_df, mun_df
 
+
+#####################################################################################################
+# merge_datasets takes both dataframes generated in the previous function, then both are inner      #
+# joined by two keys, Entity key and Mun Key, then 6 columns are selected                           #
+#####################################################################################################
 def merge_datasets(thd,md):
     new_df = pd.merge(md, \
                 thd, \
@@ -23,6 +33,11 @@ def merge_datasets(thd,md):
                 [['Cve_Ent','Cve_Mun','nmun','tmax','tmin','Value']]
     return new_df
 
+#####################################################################################################
+# The project path is passed as an argument to the script, then the path to the Current folder is  ,#
+# generated, the date is generated as an identifier for the merged file, call_dataframes and        #
+# merge_datasets are called and the output is stored as a CSV file in the Current folder            #
+#####################################################################################################
 if __name__ == '__main__':
     path = sys.argv[1] # Pass the path as an argument in the execution of the script
     current_path = '{}current/'.format(path)
@@ -31,8 +46,3 @@ if __name__ == '__main__':
     thd, md = call_dataframes(path)
     nd = merge_datasets(thd,md)
     nd.to_csv('{}merged_dataframe_{}.csv'.format(current_path,date))
-
-
-
-#C:\Users\Paola\Desktop\DE_assessment\
-#'two_hour_df_22102923.csv'
