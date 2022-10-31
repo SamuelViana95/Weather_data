@@ -4,6 +4,11 @@ import gzip
 import datetime 
 import sys  
 
+#####################################################################################################
+# get_data makes a request to the CONAGUA's API, then the file is saved in the gz folder, since the #
+# file is downloaded as a gz compressed file,                                                       #
+#####################################################################################################
+
 def get_data(url,path,filename):
     response = requests.post(url)
     try:
@@ -14,13 +19,22 @@ def get_data(url,path,filename):
     except:
         print('The service is unavailable at this time, please try later...')
 
+#####################################################################################################
+# format_data uncompress the downloaded file, the file with a JSON format is called and is flattened#
+# and stored as a CSV file                                                                          #
+#####################################################################################################
 
 def format_data(path,in_fn,ou_fn):
     with gzip.open('{}gz/{}'.format(path,in_fn)) as f:
         weather_data = pd.read_json(f)
     weather_data.head()
     weather_data.to_csv("{}historic/{}".format(path,ou_fn), index = False)
-
+    
+#####################################################################################################
+# The date is generated so we can use it as identifier of each downloaded file, the url is defined  #
+# and the Project path is passed as an argument to the script, the output paths are formatted and   #
+# get_data and format_data are called                                                               #
+#####################################################################################################
 if __name__ == '__main__':
     date = datetime.datetime.now().strftime('%y-%m-%d-%H-%M')
     #https://smn.conagua.gob.mx/webservices/?method=1
